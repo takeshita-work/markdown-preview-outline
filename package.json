@@ -1,0 +1,57 @@
+{
+  "name": "markdown-preview-outline",
+  "displayName": "Markdown Preview Outline",
+  "description": "Adds an outline (table of contents) sidebar to VS Code's built-in Markdown preview",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "markdown.previewScripts": [
+      "./media/outline.js"
+    ],
+    "markdown.previewStyles": [
+      "./media/outline.css"
+    ],
+    "configuration": {
+      "title": "Markdown Preview Outline",
+      "properties": {
+        "markdownPreviewOutline.position": {
+          "type": "string",
+          "default": "right",
+          "enum": [
+            "right",
+            "left"
+          ],
+          "description": "Position of the outline sidebar in the Markdown preview"
+        },
+        "markdownPreviewOutline.maxLevel": {
+          "type": "number",
+          "default": 6,
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Maximum heading level to display in the outline (1–6)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0",
+    "@types/node": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,148 @@
+/* Markdown Preview Outline - sidebar styles */
+
+/* プレビュー本体を sidebar 分だけ余白を確保するためのラッパー調整 */
+body {
+  position: relative;
+}
+
+/* サイドバー本体 */
+.markdown-outline-sidebar {
+  position: fixed;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: var(--vscode-sideBar-background, #f3f3f3);
+  border-left: 1px solid var(--vscode-sideBar-border, #e0e0e0);
+  color: var(--vscode-sideBar-foreground, #333);
+  font-size: 13px;
+  font-family: var(--vscode-font-family, sans-serif);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s ease;
+}
+
+.markdown-outline-sidebar.position-right {
+  right: 0;
+  border-left: 1px solid var(--vscode-sideBar-border, #e0e0e0);
+  border-right: none;
+}
+
+.markdown-outline-sidebar.position-left {
+  left: 0;
+  border-right: 1px solid var(--vscode-sideBar-border, #e0e0e0);
+  border-left: none;
+}
+
+/* 折りたたみ時 */
+.markdown-outline-sidebar.collapsed {
+  width: 32px;
+  overflow: hidden;
+}
+
+.markdown-outline-sidebar.collapsed .markdown-outline-nav {
+  display: none;
+}
+
+/* トグルボタン */
+.markdown-outline-toggle {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 28px;
+  height: 28px;
+  margin: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--vscode-icon-foreground, #666);
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.markdown-outline-toggle:hover {
+  background-color: var(--vscode-toolbar-hoverBackground, rgba(0, 0, 0, 0.1));
+}
+
+.markdown-outline-toggle:focus {
+  outline: 1px solid var(--vscode-focusBorder, #005fb8);
+  outline-offset: -1px;
+}
+
+/* ナビゲーション */
+.markdown-outline-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+/* リスト */
+.markdown-outline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 各アイテム */
+.markdown-outline-item {
+  margin: 0;
+}
+
+/* リンク */
+.markdown-outline-link {
+  display: block;
+  padding: 3px 8px 3px 0;
+  color: var(--vscode-foreground, #333);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+
+.markdown-outline-link:hover {
+  background-color: var(--vscode-list-hoverBackground, rgba(0, 0, 0, 0.07));
+  color: var(--vscode-list-hoverForeground, inherit);
+  text-decoration: none;
+}
+
+.markdown-outline-link:focus {
+  outline: 1px solid var(--vscode-focusBorder, #005fb8);
+  outline-offset: -1px;
+}
+
+/* h1 は太字 */
+.markdown-outline-item.level-1 .markdown-outline-link {
+  font-weight: bold;
+}
+
+/* 空メッセージ */
+.markdown-outline-empty {
+  margin: 8px;
+  color: var(--vscode-descriptionForeground, #888);
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* プレビュー本文の右（または左）マージンを sidebar 幅分確保 */
+body:has(.markdown-outline-sidebar.position-right:not(.collapsed)) {
+  margin-right: 220px;
+}
+
+body:has(.markdown-outline-sidebar.position-right.collapsed) {
+  margin-right: 32px;
+}
+
+body:has(.markdown-outline-sidebar.position-left:not(.collapsed)) {
+  margin-left: 220px;
+}
+
+body:has(.markdown-outline-sidebar.position-left.collapsed) {
+  margin-left: 32px;
+}
