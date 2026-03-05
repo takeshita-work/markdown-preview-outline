@@ -1,0 +1,6 @@
+:root {
+  --outline-config-position: right;
+  --outline-config-max-level: 6;
+  --outline-config-show-breadcrumb: 1;
+  --outline-config-scroll-sync-offset: 20;
+}
