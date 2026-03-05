@@ -1,36 +1,37 @@
+/**
+ * Markdown Preview Outline — 拡張ホスト側エントリポイント
+ *
+ * 主な責務:
+ * - ユーザー設定を CSS 変数として media/config.css に書き出す（CSS 変数ブリッジ）
+ * - プレビュースクリプトからの revealLine メッセージを受けてエディタをスクロールするコマンドを登録
+ * - 設定変更時に config.css を再生成しプレビューをリフレッシュする
+ */
+
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
-export function activate(context: vscode.ExtensionContext) {
-  // プレビュー内スクリプトから postMessage で送られるメッセージを受信する
-  const provider = new MarkdownOutlineMessageHandler();
-  context.subscriptions.push(
-    vscode.window.registerWebviewPanelSerializer('markdown.preview', provider)
-  );
-
-  // markdown.preview の webview パネルが開かれたときにメッセージハンドラを登録する
-  context.subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(() => {
-      // アクティブエディタ変更時はプレビュー側が自動更新するため特に処理不要
-    })
-  );
-
-  // すでに開かれているプレビューパネルのメッセージを処理するため、
-  // vscode.markdown.api を通じて webview へのアクセスを試みる
-  setupMessageHandler(context);
+/**
+ * 現在のユーザー設定を CSS カスタムプロパティとして media/config.css に書き出す。
+ * プレビュー内スクリプト（outline-config.js）が getComputedStyle() で読み取る。
+ */
+function writeConfigCss(extensionPath: string) {
+  const cfg = vscode.workspace.getConfiguration('markdownPreviewOutline');
+  const position = cfg.get<string>('position', 'right') || 'right';
+  const maxLevel = cfg.get<number>('maxLevel', 6) || 6;
+  const showBreadcrumb = cfg.get<boolean>('showBreadcrumb', true) ? 1 : 0;
+  const scrollSyncOffset = cfg.get<number>('scrollSyncOffset', 5);
+  const css = `:root {\n  --outline-config-position: ${position};\n  --outline-config-max-level: ${maxLevel};\n  --outline-config-show-breadcrumb: ${showBreadcrumb};\n  --outline-config-scroll-sync-offset: ${scrollSyncOffset};\n}\n`;
+  fs.writeFileSync(path.join(extensionPath, 'media', 'config.css'), css, 'utf8');
 }
 
-function setupMessageHandler(context: vscode.ExtensionContext) {
-  // VS Code の Markdown プレビューは内部的に WebviewPanel を使用している。
-  // 拡張機能が注入したスクリプト（outline.js）は acquireVsCodeApi().postMessage() で
-  // メッセージを送信できる。これを受け取るには WebviewPanelSerializer の登録か、
-  // onDidReceiveMessage をパネルにアタッチする必要がある。
-  //
-  // ただし、標準プレビューの WebviewPanel へ直接アクセスする公式 API は存在しない。
-  // outline.js 側では window.parent.postMessage を使い、拡張ホストは
-  // WebviewPanelSerializer でパネルを取得した後に onDidReceiveMessage を登録する。
-  //
-  // より実用的な代替手段: outline.js 内で acquireVsCodeApi() を使って
-  // postMessage し、extension.ts で WebviewPanelSerializer 経由で受信する。
+/**
+ * 拡張機能のアクティベーション処理。
+ * config.css の初期生成、revealLine コマンドの登録、設定変更リスナーの登録を行う。
+ */
+export function activate(context: vscode.ExtensionContext) {
+  // 起動時に現在の設定を config.css に書き込む
+  writeConfigCss(context.extensionPath);
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -38,7 +39,6 @@ function setupMessageHandler(context: vscode.ExtensionContext) {
       async (line: number) => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
-
         const position = new vscode.Position(line, 0);
         editor.revealRange(
           new vscode.Range(position, position),
@@ -47,26 +47,17 @@ function setupMessageHandler(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  // 設定変更時に config.css を更新してプレビューを再描画する
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('markdownPreviewOutline')) {
+        writeConfigCss(context.extensionPath);
+        vscode.commands.executeCommand('markdown.preview.refresh');
+      }
+    })
+  );
 }
 
-class MarkdownOutlineMessageHandler implements vscode.WebviewPanelSerializer {
-  async deserializeWebviewPanel(
-    webviewPanel: vscode.WebviewPanel,
-    _state: unknown
-  ): Promise<void> {
-    attachMessageHandler(webviewPanel);
-  }
-}
-
-export function attachMessageHandler(panel: vscode.WebviewPanel) {
-  panel.webview.onDidReceiveMessage(async (message: { type: string; line?: number }) => {
-    if (message.type === 'revealLine' && typeof message.line === 'number') {
-      await vscode.commands.executeCommand(
-        'markdownPreviewOutline.revealLine',
-        message.line
-      );
-    }
-  });
-}
-
+/** 拡張機能の非アクティベーション処理（クリーンアップ不要）。 */
 export function deactivate() {}

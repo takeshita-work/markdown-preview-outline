@@ -9,13 +9,20 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "markdown.previewScripts": [
-      "./media/outline.js"
+      "./media/outline-config.js",
+      "./media/outline-dom.js",
+      "./media/outline-tree.js",
+      "./media/outline-breadcrumb.js",
+      "./media/outline-events.js"
     ],
     "markdown.previewStyles": [
+      "./media/config.css",
       "./media/outline.css"
     ],
     "configuration": {
@@ -36,6 +43,18 @@
           "minimum": 1,
           "maximum": 6,
           "description": "Maximum heading level to display in the outline (1–6)"
+        },
+        "markdownPreviewOutline.showBreadcrumb": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show breadcrumb navigation at the top of the Markdown preview"
+        },
+        "markdownPreviewOutline.scrollSyncOffset": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 20,
+          "description": "Number of lines from the top of the editor used as the scroll sync reference point (editor↔preview)"
         }
       }
     }
