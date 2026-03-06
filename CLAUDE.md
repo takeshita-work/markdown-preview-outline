@@ -4,7 +4,7 @@ VS Code の標準マークダウンプレビューにアウトライン（目次
 
 ## プロジェクト概要
 
-- 仕様書: `SPEC.md`
+- 仕様書: `docs/SPEC.md`
 - 開発言語: TypeScript
 - `markdown.previewScripts` / `markdown.previewStyles` を使い、標準プレビューに JS/CSS を注入する方式
 

@@ -110,7 +110,8 @@ VS Code の標準マークダウンプレビュー内にアウトライン（目
 │   ├── outline-events.js        # イベント処理・スクロール同期・初期化
 │   ├── config.css               # 設定値ブリッジ用 CSS（extension.ts が動的生成）
 │   └── outline.css              # プレビュー注入スタイル
-├── SPEC.md                      # 本ドキュメント
+├── docs/
+│   └── SPEC.md                  # 本ドキュメント
 └── CLAUDE.md                    # 開発ガイド
 ```
 
