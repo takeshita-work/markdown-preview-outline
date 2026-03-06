@@ -127,6 +127,7 @@ VS Code の標準マークダウンプレビュー内にアウトライン（目
 - `mpo.vscode` は常に `null`。`acquireVsCodeApi()` は VS Code 自身の `index.js` が使用するため本拡張では呼び出さない
 - 各モジュールは IIFE 先頭に初期化済みフラグ（`_initialized` 等）を確認するガードを持ち、スクリプト再注入時の二重実行を防ぐ
 - `outline-events.js` の `init()` は依存モジュールの関数が揃うまで 10ms ごとにリトライし、スクリプト読み込み順序の競合を回避する
+- Marp for VS Code との共存: Marp は `markdown.previewScripts` を使用するため本拡張のスクリプトも注入されるが、Marp プレビュー時はサイドバー・パンくずを非表示にして干渉を防ぐ（`data-marp-vscode-href` 属性の有無で判定）
 
 ### CSS 変数ブリッジ
 拡張ホストの設定値をプレビュー内スクリプトに渡す仕組み:

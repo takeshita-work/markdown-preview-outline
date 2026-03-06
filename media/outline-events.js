@@ -9,6 +9,7 @@
  *   - プレビュー→エディタ: スクロールイベント → revealLine メッセージ送信
  *   - ループ防止: programmaticScroll / userScrolling フラグ
  * - VS Code からの updateConfig メッセージ処理
+ * - Marp 検出: Marp プレビュー時はサイドバー・パンくずを非表示
  * - 全モジュールの初期化呼び出し（init）
  */
 (function () {
@@ -246,6 +247,27 @@
     }
   });
 
+  // --- Marp 検出 ---
+
+  /**
+   * Marp プレビューかどうかを判定し、そうであればサイドバーを非表示にする。
+   * Marp は outline.css の <link> href を削除して data-marp-vscode-href に移すため、
+   * その属性の有無で判定する。Marp の処理完了を待つため 400ms 後に実行する。
+   */
+  function detectAndDisableForMarp() {
+    setTimeout(() => {
+      const isMarp = Array.from(document.querySelectorAll('link[data-marp-vscode-href]'))
+        .some(el => (el.getAttribute('data-marp-vscode-href') || '').includes('outline.css'));
+      if (!isMarp) return;
+      mpo.sidebar.style.display = 'none';
+      mpo.config.showBreadcrumb = false;
+      mpo.breadcrumb.hidden = true;
+      document.body.style.marginRight = '';
+      document.body.style.marginLeft = '';
+      document.body.style.paddingTop = '';
+    }, 400);
+  }
+
   // --- 初期化 ---
 
   /**
@@ -266,6 +288,7 @@
     mpo.mountSidebar();
     mpo.mountBreadcrumb();
     mpo.syncBodyStyles();
+    detectAndDisableForMarp();
     initResize();
     initScrollSyncGuard();
     initPreviewToEditorSync();
