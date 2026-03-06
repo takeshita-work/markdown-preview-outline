@@ -2,7 +2,7 @@
   "name": "markdown-preview-outline",
   "displayName": "Markdown Preview Outline",
   "description": "Adds an outline (table of contents) sidebar to VS Code's built-in Markdown preview",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.75.0"
   },
