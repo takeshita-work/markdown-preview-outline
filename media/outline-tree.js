@@ -14,6 +14,8 @@
 
   const mpo = window._mpo;
 
+  if (!mpo || mpo._treeInitialized) return;
+
   /**
    * 平坦な見出し要素配列を親子関係のあるツリー構造に変換する。
    * スタックを用いた O(n) アルゴリズムで、見出しレベルの増減に対応する。
@@ -239,6 +241,54 @@
     nav.appendChild(ul);
   }
 
+  /**
+   * nav をアクティブリンクが見えるようにスクロールする。
+   * リンクがすでに表示範囲内にある場合はスクロールしない。
+   * 表示範囲外の場合は、リンクの上に MARGIN_TOP px の余白を付けてスクロールする。
+   * @param {HTMLAnchorElement} link - スクロール先のリンク要素
+   */
+  function scrollNavToActiveLink(link) {
+    const nav = mpo.nav;
+    const marginTop = nav.clientHeight * 0.25;
+    const navRect = nav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    nav.scrollTop = nav.scrollTop + linkRect.top - navRect.top - marginTop;
+  }
+
+  /**
+   * 指定した見出し要素群に対応するアウトラインリンクにアクティブクラスを付与する。
+   * パンくずに表示される全レベルの見出しを受け取り、それぞれのリンクに付与する。
+   * 以前のアクティブ項目からはクラスを除去する。
+   * 最も深いアクティブリンクが表示されるよう nav を自動スクロールする。
+   * data-line 属性を優先し、なければ data-heading-id で照合する。
+   * @param {HTMLElement[]} headings - アクティブにする見出し要素の配列（空配列で全解除）
+   */
+  function updateOutlineActive(headings) {
+    mpo.nav.querySelectorAll('.markdown-outline-link.active').forEach((el) => {
+      el.classList.remove('active');
+    });
+    if (!headings || headings.length === 0) return;
+    let deepestLink = null;
+    headings.forEach((heading) => {
+      const lineAttr = heading.getAttribute('data-line');
+      const headingId = heading.id;
+      let link = null;
+      if (lineAttr !== null) {
+        link = mpo.nav.querySelector(`.markdown-outline-link[data-line="${lineAttr}"]`);
+      }
+      if (!link && headingId) {
+        link = mpo.nav.querySelector(`.markdown-outline-link[data-heading-id="${headingId}"]`);
+      }
+      if (link) {
+        link.classList.add('active');
+        deepestLink = link;
+      }
+    });
+    if (deepestLink) scrollNavToActiveLink(deepestLink);
+  }
+
   mpo.scrollToHeading = scrollToHeading;
   mpo.buildOutline = buildOutline;
+  mpo.updateOutlineActive = updateOutlineActive;
+  mpo._treeInitialized = true;
 })();

@@ -15,17 +15,16 @@
 
   const mpo = window._mpo;
 
+  if (!mpo || mpo._breadcrumbInitialized) return;
+
   /**
-   * 現在のスクロール位置に基づきパンくずを再描画する。
-   * viewport 上端（10px の余裕）を通過した見出しから各レベルの最新を取得し、
-   * 階層順に「›」区切りで表示する。見出しがない場合は非表示にする。
+   * 現在のスクロール位置に基づきパンくずとアウトラインのアクティブ項目を更新する。
+   * viewport 上端（10px の余裕）を通過した見出しから各レベルの最新を取得する。
+   * アウトラインのハイライトは showBreadcrumb 設定に関わらず常に更新する。
+   * パンくずは showBreadcrumb が true の場合のみ描画する。
    */
   function updateBreadcrumb() {
     const { breadcrumb, sidebar, config } = mpo;
-    if (!config.showBreadcrumb) {
-      breadcrumb.hidden = true;
-      return;
-    }
 
     const allHeadings = Array.from(
       document.querySelectorAll('h1,h2,h3,h4,h5,h6')
@@ -42,6 +41,17 @@
         activeAtLevel.set(level, h);
         for (let i = level + 1; i <= 6; i++) activeAtLevel.delete(i);
       }
+    }
+
+    // アウトラインサイドバーのアクティブ項目を更新（パンくず表示設定に関わらず実行）
+    // パンくずに表示される全レベルの見出しを渡し、対応するリンクすべてに下線を付与する
+    if (typeof mpo.updateOutlineActive === 'function') {
+      mpo.updateOutlineActive([...activeAtLevel.values()]);
+    }
+
+    if (!config.showBreadcrumb) {
+      breadcrumb.hidden = true;
+      return;
     }
 
     breadcrumb.innerHTML = '';
@@ -91,4 +101,5 @@
 
   mpo.updateBreadcrumb = updateBreadcrumb;
   mpo.initBreadcrumbUpdater = initBreadcrumbUpdater;
+  mpo._breadcrumbInitialized = true;
 })();

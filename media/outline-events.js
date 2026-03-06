@@ -15,6 +15,10 @@
   'use strict';
 
   const mpo = window._mpo;
+
+  if (!mpo || mpo._eventsInitialized) return;
+  mpo._eventsInitialized = true;
+
   const MIN_WIDTH = 100;
   const MAX_WIDTH = 600;
 
@@ -248,8 +252,17 @@
    * 全モジュールの初期化を行うエントリポイント。
    * DOM マウント → スタイル同期 → リサイズ → スクロール同期 →
    * アウトライン構築 → 遅延再構築（200ms）→ コンテンツ変更監視 → パンくず更新の順に実行する。
+   * 依存モジュール（outline-dom.js 等）が未ロードの場合は 10ms 後にリトライする。
    */
   function init() {
+    if (
+      typeof mpo.mountSidebar !== 'function' ||
+      typeof mpo.buildOutline !== 'function' ||
+      typeof mpo.updateBreadcrumb !== 'function'
+    ) {
+      setTimeout(init, 10);
+      return;
+    }
     mpo.mountSidebar();
     mpo.mountBreadcrumb();
     mpo.syncBodyStyles();

@@ -26,6 +26,7 @@
   --outline-breadcrumb-color:  var(--vscode-descriptionForeground, #666);
   --outline-breadcrumb-item-color: var(--vscode-foreground, #333);
   --outline-breadcrumb-link-color: #4b5563;
+  --outline-active-line:           color-mix(in srgb, var(--vscode-foreground) 65%, transparent);
 }
 
 /* プレビュー本体を sidebar 分だけ余白を確保するためのラッパー調整 */
@@ -250,6 +251,13 @@ h1, h2, h3, h4, h5, h6 {
 .markdown-outline-link:focus {
   outline: 1px solid var(--outline-accent);
   outline-offset: -1px;
+}
+
+.markdown-outline-link.active {
+  text-decoration: underline;
+  text-decoration-color: var(--outline-active-line);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 3px;
 }
 
 /* h1 は太字 */

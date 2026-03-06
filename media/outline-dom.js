@@ -20,6 +20,8 @@
 
   const mpo = window._mpo;
 
+  if (!mpo || mpo._domInitialized) return;
+
   // --- 幅の永続化 ---
 
   const STORAGE_KEY = 'markdownPreviewOutline.sidebarWidth';
@@ -157,6 +159,7 @@
   mpo.mountSidebar = mountSidebar;
   mpo.mountBreadcrumb = mountBreadcrumb;
   mpo.syncBodyStyles = syncBodyStyles;
+  mpo._domInitialized = true;
 
   // --- 開閉トグル ---
 

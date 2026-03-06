@@ -18,10 +18,13 @@
 (function () {
   'use strict';
 
+  if (window._mpo?._initialized) return;
+
   const mpo = window._mpo = {};
 
-  // acquireVsCodeApi は一度だけ呼べる
-  try { mpo.vscode = acquireVsCodeApi(); } catch (_) { mpo.vscode = null; }
+  // acquireVsCodeApi は VS Code 自身の index.js が使用するため呼び出さない
+  // postMessage は extension.ts 側で受信していないため mpo.vscode は常に null
+  mpo.vscode = null;
 
   /**
    * :root の CSS 変数から現在のユーザー設定を読み取り、設定オブジェクトを返す。
@@ -98,4 +101,5 @@
   mpo.readConfigFromCss = readConfigFromCss;
   mpo.reloadConfigCss = reloadConfigCss;
   mpo.applyConfig = applyConfig;
+  mpo._initialized = true;
 })();

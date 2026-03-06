@@ -5,6 +5,7 @@ VS Code の標準マークダウンプレビューにアウトライン（目次
 ## 機能
 
 - **アウトラインサイドバー** — プレビュー内に見出しの階層ツリーを表示
+- **アクティブ項目ハイライト** — 現在表示中のセクションをアウトラインで下線ハイライト、自動スクロールで常に可視
 - **パンくずナビゲーション** — プレビュー上端に現在のセクション階層を表示
 - **スクロール同期** — エディタとプレビューの双方向スクロール同期
 - **折りたたみツリー** — 個別ノード/サブツリー/全体の折りたたみ・展開
@@ -35,6 +36,22 @@ npm run compile      # TypeScript コンパイル
 npm run watch        # ファイル変更の監視・自動コンパイル
 npm run lint         # ESLint 実行
 ```
+
+### 開発中の動作確認
+
+1. VS Code でプロジェクトフォルダを開く
+2. `F5` を押す — 自動でコンパイルが走り、Extension Development Host ウィンドウが起動する
+3. 新しいウィンドウでマークダウンファイルを開いてプレビューを確認する
+
+コードを変更した場合は、Extension Development Host ウィンドウで `Ctrl+Shift+P` → **Developer: Reload Window** を実行する。
+
+### 確認用パッケージ化
+
+```bash
+npx @vscode/vsce package --out markdown-preview-outline-dev.vsix
+```
+
+ファイル名を固定することで vsix が増えず、`.gitignore` の `*.vsix` により git 管理対象外になる。
 
 ### パッケージ化
 
